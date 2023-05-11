@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/sports_app
+    username: root
+    password: 2023@@RootUserMySQL
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        ddl-auto: create-drop
+        show-sql: true
+        format_sql: true
+      database: mysql
+      database-platform: org.hibernate.dialect.MySQLDialect
