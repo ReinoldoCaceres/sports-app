@@ -63,4 +63,4 @@ Finally, you can search for teams or games based on your preferences by using th
 
 ## **Contributing**
 
-If you're interested in contributing to the University Sports Matching App, please feel free to email me. We welcome all contributions and feedback!
+If you're interested in contributing to the University Sports Matching App, please feel free to email me. We welcome all contributions and feedback! :smile:
