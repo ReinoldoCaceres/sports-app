@@ -1,6 +1,4 @@
 package com.raintech.sportsapp.university;
-
-
 import lombok.Data;
 import jakarta.persistence.*;
 
