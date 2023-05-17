@@ -55,12 +55,12 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getUsername(){
+    public String getUsername() {
         return username;
     }
 
     @Override
-    public String getPassword(){
+    public String getPassword() {
         return password;
     }
 
@@ -83,4 +83,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return false;
     }
+
 }

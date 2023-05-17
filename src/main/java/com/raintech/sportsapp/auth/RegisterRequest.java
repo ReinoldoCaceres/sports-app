@@ -16,17 +16,10 @@ import lombok.NoArgsConstructor;
 public class RegisterRequest {
 
 
-    private int userId;
-
-    private String username;
-
-    private String password;
-
-    private String email;
-
     private String firstName;
-
     private String lastName;
-
+    private String username;
+    private String password;
+    private String email;
     private Role role;
 }

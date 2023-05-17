@@ -8,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,8 +23,8 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         // Lambda expression defining the implementation of the UserDetailsService interface
-        return (String username) -> repository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("User not found"));
-
+        return username -> repository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         /**
          Inside the userDetailsService() method, a lambda expression is used to define the implementation of the UserDetailsService interface.
          The lambda expression takes a String parameter username and uses it to call the findByUsername() method on the repository object.
@@ -34,10 +33,13 @@ public class ApplicationConfig {
     }
     @Bean
     public AuthenticationProvider authenticationProvider(){
+
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
+
+
     }
 
     @Bean
