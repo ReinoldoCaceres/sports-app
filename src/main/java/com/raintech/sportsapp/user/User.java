@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +21,7 @@ import java.util.List;
 @Entity
 @Table(name = "User")
 @Data
+@DynamicInsert
 public class User implements UserDetails {
 
     @Id
@@ -55,33 +57,24 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true; // Modify this according to your business logic
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true; // Modify this according to your business logic
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true; // Modify this according to your business logic
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true; // Modify this according to your business logic
     }
+
 
 }
