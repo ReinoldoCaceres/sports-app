@@ -8,14 +8,14 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        ddl-auto: create-drop
         format_sql: true
+        ddl-auto: create-drop
       database: mysql
       database-platform: org.hibernate.dialect.MySQLDialect
 application:
   security:
     jwt:
       secret-key: 3373367638792F423F4528482B4D6251655468576D5A7134743777217A244326
-      expiration: 3600
+      expiration: 604800
       refresh-token:
         expiration: 604800
