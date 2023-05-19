@@ -15,17 +15,30 @@ The University Sports Matching App is a web-based application that helps univers
 
 To get started with the University Sports Matching App, you'll need to have the following tools and technologies installed:
 
-- Java 8+
+- Java 17
 - Docker
 - Kubernetes
 - MySQL
 
 <span style="color:cornflowerblue">To set up the application, follow these steps:</span>
 
-1. Clone the repository to your local machine
-2. Build the Docker image by running the following command in the project root directory: `docker build -t university-sports-matching-app .`
-3. Start the MySQL database by running the following command: `kubectl apply -f kubernetes/mysql-deployment.yaml`
-4. Start the application by running the following command: `kubectl apply -f kubernetes/app-deployment.yaml`
+1. Clone the repository to your local machine`git clone https://github.com/ReinoldoCaceres/sports-app.git
+   `
+2. Navigate to the project directory:`cd sports-app`
+3. Configure the database connection:
+
+   •Open the `src/main/resources/application.yml` file.
+
+   •Update the following properties with your MySQL database configuration:
+    ```
+   spring:
+      datasource:
+          url: jdbc:mysql://localhost:3306/sportsapp
+          username: your-username
+          password: your-password
+      ```
+4. Build the project using Maven: `mvn clean package`
+5. Run the application: `java -jar target/sportsapp.jar`
 5. The application should now be accessible at http://localhost:8080.
 
 ## <span style="color:cornflowerblue">Usage</span>
