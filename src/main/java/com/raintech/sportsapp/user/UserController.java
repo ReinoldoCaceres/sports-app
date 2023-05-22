@@ -1,13 +1,11 @@
 package com.raintech.sportsapp.user;
 
-import com.raintech.sportsapp.campus_sport.CampusSport;
 import com.raintech.sportsapp.campus_sport.CampusSportRepository;
+import com.raintech.sportsapp.config.JwtService;
 import com.raintech.sportsapp.preferences.Preference;
 import com.raintech.sportsapp.preferences.PreferenceRepository;
 import com.raintech.sportsapp.preferences.PreferenceRequest;
-import com.raintech.sportsapp.sports.Sport;
 import com.raintech.sportsapp.sports.SportRepository;
-import com.raintech.sportsapp.campus.Campus;
 import com.raintech.sportsapp.campus.CampusRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,11 +20,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserController {
 
+    private final JwtService jwtService;
     private final UserRepository userRepository;
     private final CampusRepository campusRepository;
     private final CampusSportRepository campusSportRepository;
     private final PreferenceRepository preferenceRepository;
     private final SportRepository sportRepository;
+    private final UserService userService;
+
+
 
     @GetMapping
     public List<User> getAllUsers() {
@@ -35,72 +37,57 @@ public class UserController {
 
 
     @PostMapping("/{userId}/campus")
-    public ResponseEntity<?> addUserCampus(@PathVariable int userId, @RequestBody String campusName) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            Optional<Campus> optionalCampus = campusRepository.findByCampusName(campusName);
-            if (optionalCampus.isPresent()) {
-                Campus campus = optionalCampus.get();
-                user.setCampus(campus);
-                User updatedUser = userRepository.save(user);
-                return ResponseEntity.ok(updatedUser);
-            } else {
-                String errorMessage = "Campus name not found: " + campusName;
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage); // or return a different error response as needed
-            }
-        } else {
-            String errorMessage = "User ID not found: " + userId;
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage); // or return a different error response as needed
+    public ResponseEntity<?> addUserCampus(@PathVariable int userId, @RequestBody String campusName, @RequestHeader("Authorization") String authorizationHeader) {
+
+        String username = userService.extractUsernameFromToken(authorizationHeader);
+
+        // Check user authorization
+        ResponseEntity<?> authorizationResponse = userService.checkUserAuthorization(userId, username);
+        if (authorizationResponse != null) {
+            return authorizationResponse;
         }
-    }
 
-    @PostMapping("/{userId}/preferences")
-    public ResponseEntity<?> addUserPreference(@PathVariable int userId, @RequestBody PreferenceRequest preferenceRequest) {
-        // Retrieve the user based on the provided userId
+        //If authorization is ok proceed
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
-            // Create a new Preference object based on the request
-            Preference preference = new Preference();
-            preference.setUser(user);
-
-            // Find the CampusSport entity based on the sportsName and user's campus ID
-            Optional<Sport> optionalSport = sportRepository.findBySportName(preferenceRequest.getSportsName());
-            if (optionalSport.isPresent()) {
-                Sport sport = optionalSport.get();
-
-                // Check if the sport belongs to the user's campus
-                Optional<CampusSport> optionalCampusSport = campusSportRepository.findBySportAndCampus(sport, user.getCampus());
-                if (optionalCampusSport.isPresent()) {
-                    CampusSport campusSport = optionalCampusSport.get();
-                    preference.setCampusSport(campusSport);
-                    preference.setWeekday(preferenceRequest.getWeekday());
-                    preference.setTimeSlot(preferenceRequest.getTimeSlot());
-
-                    // Save the preference in the database
-                    Preference savedPreference = preferenceRepository.save(preference);
-
-                    // Return a successful response with the saved preference
-                    return ResponseEntity.ok(savedPreference);
-                } else {
-                    // Return a NOT_FOUND response if the CampusSport entity is not found for the specified sportsName and user's campus ID
-                    String errorMessage = preferenceRequest.getSportsName() + " Sport not found for your campus! ";
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
-                }
-            } else {
-                // Return a NOT_FOUND response if the Sport entity is not found for the specified sportsName
-                String errorMessage = "Sport not found for sports name: " + preferenceRequest.getSportsName();
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
-            }
+            return userService.addUserCampus(user, campusName);
         } else {
-            // Return a NOT_FOUND response if the user is not found for the specified userId
             String errorMessage = "User ID not found: " + userId;
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
         }
     }
 
+
+    @PostMapping("/{userId}/preferences")
+    public ResponseEntity<?> addUserPreference(@PathVariable int userId, @RequestBody PreferenceRequest preferenceRequest, @RequestHeader("Authorization") String authorizationHeader) {
+
+        String username = userService.extractUsernameFromToken(authorizationHeader);
+
+
+        // Check user authorization
+        ResponseEntity<?> authorizationResponse = userService.checkUserAuthorization(userId, username);
+        if (authorizationResponse != null) {
+            return authorizationResponse;
+        }
+
+        // Retrieve the user
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User ID not found: " + userId);
+        }
+        User user = optionalUser.get();
+
+        // Create a new preference
+        Preference preference = userService.createPreference(user, preferenceRequest);
+
+        // Save the preference in the database
+        Preference savedPreference = preferenceRepository.save(preference);
+
+        // Return a successful response with the saved preference
+        return ResponseEntity.ok(savedPreference);
+    }
 
 
 
