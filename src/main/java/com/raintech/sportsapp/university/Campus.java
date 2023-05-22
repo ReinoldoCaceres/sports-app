@@ -1,4 +1,5 @@
 package com.raintech.sportsapp.university;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import jakarta.persistence.*;
 
@@ -20,5 +21,6 @@ public class Campus {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "University_ID", referencedColumnName = "University_ID", insertable = false, updatable = false)
+    @JsonIgnore
     private University university;
 }

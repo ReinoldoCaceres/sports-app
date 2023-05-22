@@ -6,9 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/campuses")
+@RequestMapping("/api/v1/campus")
 @RequiredArgsConstructor
 public class CampusController {
 
@@ -47,6 +48,16 @@ public class CampusController {
             return ResponseEntity.ok(updatedCampus);
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/campus/{campusName}")
+    public ResponseEntity<String> checkCampusExists(@PathVariable String campusName) {
+        Optional<Campus> optionalCampus = campusRepository.findByCampusName(campusName);
+        if (optionalCampus.isPresent()) {
+            return ResponseEntity.ok("it exists");
+        } else {
+            return ResponseEntity.ok("not found");
         }
     }
 
