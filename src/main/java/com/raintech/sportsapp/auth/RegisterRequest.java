@@ -1,6 +1,5 @@
 package com.raintech.sportsapp.auth;
 
-import com.raintech.sportsapp.university.Campus;
 import com.raintech.sportsapp.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

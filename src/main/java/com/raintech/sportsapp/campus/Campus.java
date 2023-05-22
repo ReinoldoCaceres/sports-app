@@ -1,5 +1,6 @@
-package com.raintech.sportsapp.university;
+package com.raintech.sportsapp.campus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.raintech.sportsapp.university.University;
 import lombok.Data;
 import jakarta.persistence.*;
 

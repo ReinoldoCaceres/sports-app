@@ -1,4 +1,4 @@
-package com.raintech.sportsapp.university;
+package com.raintech.sportsapp.campus;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

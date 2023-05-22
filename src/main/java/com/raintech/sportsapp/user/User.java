@@ -1,6 +1,6 @@
 package com.raintech.sportsapp.user;
 
-import com.raintech.sportsapp.university.Campus;
+import com.raintech.sportsapp.campus.Campus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
