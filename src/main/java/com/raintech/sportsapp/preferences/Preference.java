@@ -1,12 +1,14 @@
 package com.raintech.sportsapp.preferences;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.raintech.sportsapp.campus_sport.CampusSport;
+import com.raintech.sportsapp.config.LocalTimeSerializer;
 import com.raintech.sportsapp.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
-
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "Preferences")
@@ -31,8 +33,12 @@ public class Preference {
     @Column(name = "Weekday")
     private String weekday;
 
-    @Column(name = "Time_Slot")
-    private String timeSlot;
+    @JsonSerialize(using = LocalTimeSerializer.class)
+    @Column(name = "Start_Time")
+    private LocalTime startTime;
 
-    // Constructors, getters, and setters
+    @JsonSerialize(using = LocalTimeSerializer.class)
+    @Column(name = "End_Time")
+    private LocalTime endTime;
+
 }

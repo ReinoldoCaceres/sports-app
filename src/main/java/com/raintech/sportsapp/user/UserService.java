@@ -66,7 +66,8 @@ public class UserService {
         CampusSport campusSport = optionalCampusSport.get();
         preference.setCampusSport(campusSport);
         preference.setWeekday(preferenceRequest.getWeekday());
-        preference.setTimeSlot(preferenceRequest.getTimeSlot());
+        preference.setStartTime(preferenceRequest.getStartTime());
+        preference.setEndTime(preferenceRequest.getEndTime());
 
         return preference;
     }
