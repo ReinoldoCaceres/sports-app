@@ -40,9 +40,18 @@ public class Team {
     private Set<TeamMember> teamMembers = new HashSet<>();
 
     public void addMember(TeamMember teamMember) {
+        // Check if the user is already a member of the team
+        boolean isExistingMember = teamMembers.stream()
+                .anyMatch(member -> member.getUser().equals(teamMember.getUser()));
+
+        if (isExistingMember) {
+            throw new IllegalArgumentException("User is already a member of the team.");
+        }
+
         teamMembers.add(teamMember);
         teamMember.setTeam(this);
     }
+
 
     public void removeMember(TeamMember teamMember) {
         teamMembers.remove(teamMember);

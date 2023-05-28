@@ -79,17 +79,6 @@ public class UserController {
         // Save the preference in the database
         Preference savedPreference = preferenceRepository.save(preference);
 
-        try {
-            // Trigger team creation process
-            teamService.createTeamsFromPreferences();
-        } catch (Exception e) {
-            // Delete the saved preference
-            preferenceRepository.delete(savedPreference);
-
-            // Return an error response
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create teams from preferences.");
-        }
-
         // Return a successful response with the saved preference
         return ResponseEntity.ok(savedPreference);
     }

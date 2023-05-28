@@ -10,7 +10,10 @@ import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "Team_Member")
+@Table(name = "Team_Member",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"Team_ID", "User_ID"})
+        })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,7 +36,7 @@ public class TeamMember {
 
     @Override
     public int hashCode() {
-        return Objects.hash(teamMemberId, team);
+        return Objects.hash(teamMemberId, team, user);
     }
 
     @Override
@@ -45,15 +48,9 @@ public class TeamMember {
             return false;
         }
         TeamMember other = (TeamMember) obj;
-        return teamMemberId == other.teamMemberId && Objects.equals(team, other.team);
+        return teamMemberId == other.teamMemberId &&
+                Objects.equals(team, other.team) &&
+                Objects.equals(user, other.user);
     }
 
-    @Override
-    public String toString() {
-        return "TeamMember{" +
-                "teamMemberId=" + teamMemberId +
-                ", team=" + (team != null ? team.getTeamId() : null) +
-                ", user=" + user +
-                '}';
-    }
 }

@@ -48,12 +48,17 @@ public class TeamService {
                 Team newTeam = createNewTeam(preference);
                 teams.add(newTeam);
             } else {
-                System.out.println("Team with the same attributes already exists: " + groupKey);
+                // Update the existing team with the new preference
+                existingTeam.getCampusSport().setCampusSportId(preference.getCampusSport().getCampusSportId());
+                existingTeam.setWeekday(preference.getWeekday());
+                existingTeam.setStartTime(preference.getStartTime());
+                existingTeam.setEndTime(preference.getEndTime());
             }
         }
 
         return teams;
     }
+
 
     private Team findTeamByGroupKey(List<Team> teams, String groupKey) {
         for (Team team : teams) {
