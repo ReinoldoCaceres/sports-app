@@ -55,7 +55,7 @@ public class UserController {
 
 
     @PostMapping("/{userId}/preferences")
-    @Transactional // Add the @Transactional annotation
+    @Transactional
     public ResponseEntity<?> addUserPreference(@PathVariable int userId, @RequestBody PreferenceRequest preferenceRequest, @RequestHeader("Authorization") String authorizationHeader) {
 
         String username = userService.extractUsernameFromToken(authorizationHeader);
@@ -76,21 +76,22 @@ public class UserController {
         // Create a new preference
         Preference preference = userService.createPreference(user, preferenceRequest);
 
-        // Trigger team creation process
-        try {
-            teamService.createTeamsFromPreferences();
-        } catch (Exception e) {
-            // Rollback the transaction if an exception occurs
-            // You can handle the exception and log the error if needed
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create teams from preferences.");
-        }
-
         // Save the preference in the database
         Preference savedPreference = preferenceRepository.save(preference);
+
+        try {
+            // Trigger team creation process
+            teamService.createTeamsFromPreferences();
+        } catch (Exception e) {
+            // Delete the saved preference
+            preferenceRepository.delete(savedPreference);
+
+            // Return an error response
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create teams from preferences.");
+        }
 
         // Return a successful response with the saved preference
         return ResponseEntity.ok(savedPreference);
     }
-
 
 }

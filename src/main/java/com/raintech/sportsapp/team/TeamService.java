@@ -10,11 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalTime;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 
 @Service
 @RequiredArgsConstructor
@@ -24,95 +21,79 @@ public class TeamService {
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
 
-    /**
-     * Creates teams from preferences.
-     */
+    // ...
+
     public void createTeamsFromPreferences() {
         // Retrieve all preferences from the database
         List<Preference> preferences = preferenceRepository.findAll();
 
-        // Group preferences based on common attributes (campusSport, weekday, startTime, endTime)
-        Map<String, Team> teamsMap = groupPreferencesByAttributes(preferences);
+        // Group preferences based on common attributes (Campus_Sport_ID, Weekday, Start_Time, End_Time)
+        List<Team> teams = groupPreferencesByAttributes(preferences);
 
         // Retrieve users with matching preferences and add them to the corresponding teams
-        addUsersToTeams(teamsMap);
+        addUsersToTeams(teams);
 
         // Save the teams and their associations with users to the database
-        saveTeamsWithUsers(teamsMap);
+        saveTeamsWithUsers(teams);
     }
 
-    /**
-     * Groups preferences by common attributes.
-     *
-     * @param preferences the list of preferences to group
-     * @return a map of group keys to teams
-     */
-    private Map<String, Team> groupPreferencesByAttributes(List<Preference> preferences) {
-        Map<String, Team> teamsMap = new HashMap<>();
+    private List<Team> groupPreferencesByAttributes(List<Preference> preferences) {
+        List<Team> teams = new ArrayList<>();
+
         for (Preference preference : preferences) {
             String groupKey = getGroupKey(preference); // Create a key combining the common attributes
 
-            Team team = teamsMap.get(groupKey);
-            if (team == null) {
-                team = createNewTeam(preference);
-                teamsMap.put(groupKey, team);
+            Team existingTeam = findTeamByGroupKey(teams, groupKey);
+            if (existingTeam == null) {
+                Team newTeam = createNewTeam(preference);
+                teams.add(newTeam);
             } else {
                 System.out.println("Team with the same attributes already exists: " + groupKey);
             }
         }
-        return teamsMap;
+
+        return teams;
     }
 
+    private Team findTeamByGroupKey(List<Team> teams, String groupKey) {
+        for (Team team : teams) {
+            if (team.getGroupKey().equals(groupKey)) {
+                return team;
+            }
+        }
+        return null;
+    }
 
-    /**
-     * Retrieves users with matching preferences and adds them to the corresponding teams.
-     *
-     * @param teamsMap the map of group keys to teams
-     * @throws RuntimeException if no team members are added to any team
-     */
-    private void addUsersToTeams(Map<String, Team> teamsMap) {
-        boolean teamMembersAdded = false; // Track if any team members were added
+    private void addUsersToTeams(List<Team> teams) {
+        boolean teamMembersAdded = false;
 
-        for (Team team : teamsMap.values()) {
-            List<User> users = preferenceRepository.findUsersByGroupKey(team.getGroupKey());
+        for (Team team : teams) {
+            String groupKey = team.getGroupKey();
 
+            List<User> users = preferenceRepository.findUsersByGroupKey(groupKey);
             if (!users.isEmpty()) {
-                teamMembersAdded = true; // Set flag to true if any team members are added
+                teamRepository.save(team); // Save the team first
 
+                teamMembersAdded = true;
                 for (User user : users) {
                     TeamMember teamMember = new TeamMember();
                     teamMember.setUser(user);
-                    team.addMember(teamMember);
+                    teamMember.setTeam(team); // Associate the team with the team member
                     teamMemberRepository.save(teamMember);
                 }
-                teamRepository.save(team); // Save the team after adding the team members
             }
         }
 
-        // If no team members were added, send an HTTP error response
         if (!teamMembersAdded) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to add team members to the teams.");
         }
     }
 
 
-
-
-    /**
-     * Saves the teams and their associations with users to the database.
-     *
-     * @param teamsMap the map of group keys to teams
-     */
-    private void saveTeamsWithUsers(Map<String, Team> teamsMap) {
-        teamRepository.saveAll(teamsMap.values());
+    private void saveTeamsWithUsers(List<Team> teams) {
+        teamRepository.saveAll(teams);
     }
 
-    /**
-     * Creates a key combining the common attributes (campusSport, weekday, startTime, endTime).
-     *
-     * @param preference the preference to create the key from
-     * @return the group key
-     */
     private String getGroupKey(Preference preference) {
         return preference.getCampusSport().getCampusSportId() +
                 preference.getWeekday() +
@@ -120,26 +101,15 @@ public class TeamService {
                 preference.getEndTime();
     }
 
-    /**
-     * Creates a new team based on the preference.
-     *
-     * @param preference the preference to create the team from
-     * @return the new team
-     */
     private Team createNewTeam(Preference preference) {
         Team team = new Team();
 
-        // Set the campus sport for the team
         team.setCampusSport(preference.getCampusSport());
-
-        // Set the weekday for the team
         team.setWeekday(preference.getWeekday());
-
-        // Set the start time and end time for the team
         team.setStartTime(preference.getStartTime());
         team.setEndTime(preference.getEndTime());
 
         return team;
     }
-
 }
+

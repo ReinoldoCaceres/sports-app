@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -51,9 +52,12 @@ public class Team {
     public String getGroupKey() {
         String campusSportId = String.valueOf(campusSport.getCampusSportId());
         String weekday = this.weekday;
-        String startTime = ""; // Obtain the start time as a string
-        String endTime = ""; // Obtain the end time as a string
+        String startTime = this.startTime.toString() + ":00"; // Include seconds in the string representation
+        String endTime = this.endTime.toString() + ":00"; // Include seconds in the string representation
 
         return campusSportId + weekday + startTime + endTime;
     }
+
+
+
 }

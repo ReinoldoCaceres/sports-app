@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "Team_Member")
 @Data
@@ -29,4 +31,29 @@ public class TeamMember {
 
     // Other properties and relationships as needed
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(teamMemberId, team);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        TeamMember other = (TeamMember) obj;
+        return teamMemberId == other.teamMemberId && Objects.equals(team, other.team);
+    }
+
+    @Override
+    public String toString() {
+        return "TeamMember{" +
+                "teamMemberId=" + teamMemberId +
+                ", team=" + (team != null ? team.getTeamId() : null) +
+                ", user=" + user +
+                '}';
+    }
 }
