@@ -73,14 +73,27 @@ public class UserController {
         }
         User user = optionalUser.get();
 
-        // Create a new preference
-        Preference preference = userService.createPreference(user, preferenceRequest);
 
-        // Save the preference in the database
-        Preference savedPreference = preferenceRepository.save(preference);
+        try {
+            // Create a new preference
+            Preference preference = userService.createPreference(user, preferenceRequest);
 
-        // Return a successful response with the saved preference
-        return ResponseEntity.ok(savedPreference);
+            // Save the preference in the database
+            Preference savedPreference = preferenceRepository.save(preference);
+
+            // Create team from preference
+            teamService.createTeamFromPreference(savedPreference);
+
+            // Return a successful response with the saved preference
+            return ResponseEntity.ok(savedPreference);
+
+        } catch (IllegalArgumentException e) {
+            // Exception occurred due to a conflict in preferences
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            // Other exceptions occurred
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create preference: " + e.getMessage());
+        }
     }
 
 }

@@ -12,5 +12,4 @@ public interface CampusSportRepository extends JpaRepository<CampusSport, Intege
 
     Optional<CampusSport> findBySportAndCampus(Sport sport, Campus campus);
 
-
 }

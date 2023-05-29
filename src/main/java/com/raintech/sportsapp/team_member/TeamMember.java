@@ -32,25 +32,4 @@ public class TeamMember {
     @JoinColumn(name = "User_ID")
     private User user;
 
-    // Other properties and relationships as needed
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(teamMemberId, team, user);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        TeamMember other = (TeamMember) obj;
-        return teamMemberId == other.teamMemberId &&
-                Objects.equals(team, other.team) &&
-                Objects.equals(user, other.user);
-    }
-
 }
