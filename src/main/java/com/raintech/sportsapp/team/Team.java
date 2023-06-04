@@ -2,18 +2,20 @@ package com.raintech.sportsapp.team;
 
 import com.raintech.sportsapp.campus_sport.CampusSport;
 import com.raintech.sportsapp.team_member.TeamMember;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.Hibernate;
+
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "Team")
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @NoArgsConstructor
 @AllArgsConstructor
 public class Team {
@@ -25,6 +27,7 @@ public class Team {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Campus_Sport_ID")
+    @ToString.Exclude
     private CampusSport campusSport;
 
     @Column(name = "Weekday")
@@ -37,6 +40,7 @@ public class Team {
     private LocalTime endTime;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Set<TeamMember> teamMembers = new HashSet<>();
 
     public void addMember(TeamMember teamMember) {
@@ -68,5 +72,18 @@ public class Team {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o != null) {
+            Hibernate.getClass(this);
+            Hibernate.getClass(o);
+        }
+        return false;
+    }
 
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
