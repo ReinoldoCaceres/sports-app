@@ -4,11 +4,8 @@ import com.raintech.sportsapp.team.Team;
 import com.raintech.sportsapp.user.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name = "Team_Member",
@@ -18,8 +15,6 @@ import java.util.Objects;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@NoArgsConstructor
-@AllArgsConstructor
 public class TeamMember {
 
     @Id

@@ -24,12 +24,25 @@ public class UserController {
     private final TeamService teamService;
 
 
+    /**
+     * Retrieves a list of all users.
+     *
+     * @return A list of User objects representing all users.
+     */
     @GetMapping
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
 
+    /**
+     * Adds a campus to the user identified by the given userId.
+     *
+     * @param userId             The ID of the user to add the campus to.
+     * @param campusName         The name of the campus to be added.
+     * @param authorizationHeader The authorization header containing the user's token.
+     * @return A ResponseEntity with the appropriate status and response body.
+     */
     @PostMapping("/{userId}/campus")
     public ResponseEntity<?> addUserCampus(@PathVariable int userId, @RequestBody String campusName, @RequestHeader("Authorization") String authorizationHeader) {
 
@@ -54,6 +67,14 @@ public class UserController {
     }
 
 
+    /**
+     * Adds a preference for the user identified by the given userId.
+     *
+     * @param userId              The ID of the user to add the preference to.
+     * @param preferenceRequest   The preference request object containing the preference details.
+     * @param authorizationHeader The authorization header containing the user's token.
+     * @return A ResponseEntity with the appropriate status and response body.
+     */
     @PostMapping("/{userId}/preferences")
     @Transactional
     public ResponseEntity<?> addUserPreference(@PathVariable int userId, @RequestBody PreferenceRequest preferenceRequest, @RequestHeader("Authorization") String authorizationHeader) {

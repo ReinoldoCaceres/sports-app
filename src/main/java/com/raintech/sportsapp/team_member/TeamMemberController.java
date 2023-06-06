@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+/**
+ * Controller class for managing Team Members.
+ */
 @RestController
 @RequestMapping("/api/v1/TeamMember")
 @RequiredArgsConstructor
@@ -22,6 +25,13 @@ public class TeamMemberController {
     private final UserService userService;
     private final UserRepository userRepository;
 
+    /**
+     * Adds a team member to a team.
+     *
+     * @param teamID             The ID of the team.
+     * @param authorizationHeader The authorization header containing the user token.
+     * @return ResponseEntity with the saved TeamMember object if successful, or an error response if an exception occurs.
+     */
     @PostMapping("/AddTeamMember")
     public ResponseEntity<?> addTeamMember(@RequestBody String teamID, @RequestHeader("Authorization") String authorizationHeader) {
         String username = userService.extractUsernameFromToken(authorizationHeader);

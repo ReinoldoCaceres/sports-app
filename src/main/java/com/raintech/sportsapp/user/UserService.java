@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Service class for managing User-related operations.
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -28,6 +31,13 @@ public class UserService {
     private final JwtService jwtService;
     private final PreferenceRepository preferenceRepository;
 
+    /**
+     * Checks user authorization based on the user ID and username.
+     *
+     * @param userId   The ID of the user.
+     * @param username The username of the user.
+     * @return ResponseEntity with an error response if the user is not authorized, or null if authorized.
+     */
     public ResponseEntity<?> checkUserAuthorization(int userId, String username) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isEmpty() || !username.equals(optionalUser.get().getUsername())) {
@@ -36,6 +46,13 @@ public class UserService {
         return null; // No unauthorized response
     }
 
+    /**
+     * Adds a campus to the user.
+     *
+     * @param user        The user to add the campus to.
+     * @param campusName  The name of the campus.
+     * @return ResponseEntity with the updated User object if the campus is found, or an error response if not found.
+     */
     public ResponseEntity<?> addUserCampus(User user, String campusName) {
         Optional<Campus> optionalCampus = campusRepository.findByCampusName(campusName);
         if (optionalCampus.isPresent()) {
@@ -49,13 +66,27 @@ public class UserService {
         }
     }
 
+    /**
+     * Extracts the username from the authorization token.
+     *
+     * @param authorizationHeader The authorization header containing the token.
+     * @return The extracted username.
+     */
     public String extractUsernameFromToken(String authorizationHeader) {
         String token = authorizationHeader.substring("Bearer ".length()); // Remove "Bearer " prefix
         return jwtService.extractUsername(token);
     }
 
+    /**
+     * Creates a preference for the user.
+     *
+     * @param user              The user to create the preference for.
+     * @param preferenceRequest The preference request object containing the preference details.
+     * @return The created Preference object if successful.
+     * @throws IllegalArgumentException If a preference with the same criteria already exists or if sport or campus sport is not found.
+     */
     public Preference createPreference(User user, PreferenceRequest preferenceRequest) throws IllegalArgumentException {
-        // Check if the user already has a preference with the same CampusSport, weekday, startTime, and endTime
+        // Check if the user already has a preference with the same criteria
         Optional<Preference> existingPreference = findExistingPreference(user, preferenceRequest);
         if (existingPreference.isPresent()) {
             throw new IllegalArgumentException("A preference with the same CampusSport, weekday, startTime, and endTime already exists for the user.");
@@ -65,27 +96,35 @@ public class UserService {
         return preferenceRepository.save(preference);
     }
 
-
+    /**
+     * Finds an existing preference for the user based on the provided preference criteria.
+     *
+     * @param user              The user to search for existing preferences.
+     * @param preferenceRequest The preference request object containing the preference criteria.
+     * @return An Optional containing the existing preference if found, or an empty Optional if not found.
+     */
     private Optional<Preference> findExistingPreference(User user, PreferenceRequest preferenceRequest) {
-        // Find the sport based on the sport name in the preference request
         Optional<Sport> optionalSport = sportRepository.findBySportName(preferenceRequest.getSportsName());
         if (optionalSport.isPresent()) {
-            // If the sport is found, retrieve it from the optional
             Sport sport = optionalSport.get();
-
-            // Find the campus sport based on the found sport and the user's campus
             Optional<CampusSport> optionalCampusSport = campusSportRepository.findBySportAndCampus(sport, user.getCampus());
             if (optionalCampusSport.isPresent()) {
-                // Query the preference repository to find a preference with the specified criteria
                 return preferenceRepository.findByUserAndCampusSportAndWeekdayAndStartTimeAndEndTime(
                         user, optionalCampusSport, preferenceRequest.getWeekday(),
                         preferenceRequest.getStartTime(), preferenceRequest.getEndTime());
             }
         }
-        // Return an empty optional if no existing preference is found
         return Optional.empty();
     }
 
+    /**
+     * Builds a new Preference object based on the user and preference request.
+     *
+     * @param user              The user for whom the preference is being created.
+     * @param preferenceRequest The preference request object containing the preference details.
+     * @return The created Preference object.
+     * @throws IllegalArgumentException If the sport or campus sport is not found for the user.
+     */
     private Preference buildPreference(User user, PreferenceRequest preferenceRequest) {
         Preference preference = new Preference();
         preference.setUser(user);
@@ -108,4 +147,6 @@ public class UserService {
 
         return preference;
     }
+
 }
+
