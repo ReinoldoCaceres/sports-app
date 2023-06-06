@@ -16,12 +16,12 @@ import java.util.Set;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@NoArgsConstructor
 @AllArgsConstructor
 public class Team {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //sequence 1 2 3 4 etc
     @Column(name = "Team_ID")
     private int teamId;
 
