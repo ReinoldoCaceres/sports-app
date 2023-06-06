@@ -4,8 +4,12 @@ import com.raintech.sportsapp.preferences.Preference;
 import com.raintech.sportsapp.preferences.PreferenceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalTime;
 
+/**
+ * Service class for managing teams.
+ */
 @Service
 @RequiredArgsConstructor
 public class TeamService {
@@ -13,7 +17,11 @@ public class TeamService {
     private final PreferenceRepository preferenceRepository;
     private final TeamRepository teamRepository;
 
-
+    /**
+     * Creates a team based on the provided preference.
+     *
+     * @param preference The preference used to create the team.
+     */
     public void createTeamFromPreference(Preference preference) {
         int campusSportId = preference.getCampusSport().getCampusSportId();
         String weekday = preference.getWeekday();
@@ -36,6 +44,4 @@ public class TeamService {
 
         teamRepository.save(newTeam);
     }
-
 }
-
