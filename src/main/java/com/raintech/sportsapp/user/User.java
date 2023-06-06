@@ -1,6 +1,7 @@
 package com.raintech.sportsapp.user;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.raintech.sportsapp.campus.Campus;
@@ -55,6 +56,7 @@ public class User implements UserDetails {
     private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<TeamMember> teamMembers = new HashSet<>();
 
     @Override

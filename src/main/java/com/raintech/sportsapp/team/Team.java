@@ -1,5 +1,6 @@
 package com.raintech.sportsapp.team;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.raintech.sportsapp.campus_sport.CampusSport;
 import com.raintech.sportsapp.team_member.TeamMember;
 import lombok.AllArgsConstructor;
@@ -36,6 +37,7 @@ public class Team {
     private LocalTime endTime;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<TeamMember> teamMembers = new HashSet<>();
 
     // Getters and Setters
