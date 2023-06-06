@@ -5,7 +5,10 @@ import com.raintech.sportsapp.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
-
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "Team_Member",
@@ -14,8 +17,8 @@ import org.hibernate.Hibernate;
         })
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 public class TeamMember {
 
@@ -34,20 +37,30 @@ public class TeamMember {
     @ToString.Exclude
     private User user;
 
-    // Other properties and relationships as needed
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o != null) {
-            Hibernate.getClass(this);
-            Hibernate.getClass(o);
-        }
-        return false;
+    // Getters and Setters
+    public int getTeamMemberId() {
+        return teamMemberId;
     }
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
+    public void setTeamMemberId(int teamMemberId) {
+        this.teamMemberId = teamMemberId;
     }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
 }
+

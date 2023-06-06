@@ -1,21 +1,26 @@
 package com.raintech.sportsapp.team;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.raintech.sportsapp.campus_sport.CampusSport;
 import com.raintech.sportsapp.team_member.TeamMember;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
 
 import java.time.LocalTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "Team")
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 public class Team {
 
@@ -40,37 +45,64 @@ public class Team {
     private LocalTime endTime;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
-    @ToString.Exclude
+    @JsonIgnore
     private Set<TeamMember> teamMembers = new HashSet<>();
 
-    public void addMember(TeamMember teamMember) {
-        // Check if the user is already a member of the team
-        boolean isExistingMember = teamMembers.stream()
-                .anyMatch(member -> member.getUser().equals(teamMember.getUser()));
-
-        if (isExistingMember) {
-            throw new IllegalArgumentException("User is already a member of the team.");
-        }
-
-        teamMembers.add(teamMember);
-        teamMember.setTeam(this);
+    // Getters and Setters
+    public int getTeamId() {
+        return teamId;
     }
 
+    public void setTeamId(int teamId) {
+        this.teamId = teamId;
+    }
 
-    public void removeMember(TeamMember teamMember) {
-        teamMembers.remove(teamMember);
-        teamMember.setTeam(null);
+    public CampusSport getCampusSport() {
+        return campusSport;
+    }
+
+    public void setCampusSport(CampusSport campusSport) {
+        this.campusSport = campusSport;
+    }
+
+    public String getWeekday() {
+        return weekday;
+    }
+
+    public void setWeekday(String weekday) {
+        this.weekday = weekday;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public Set<TeamMember> getTeamMembers() {
+        return teamMembers;
+    }
+
+    public void setTeamMembers(Set<TeamMember> teamMembers) {
+        this.teamMembers = teamMembers;
     }
 
     public String getGroupKey() {
-        String campusSportId = String.valueOf(campusSport.getCampusSportId());
-        String weekday = this.weekday;
-        String startTime = this.startTime.toString() + ":00"; // Include seconds in the string representation
-        String endTime = this.endTime.toString() + ":00"; // Include seconds in the string representation
-
-        return campusSportId + weekday + startTime + endTime;
+        return campusSport.getCampusSportId() +
+                weekday +
+                startTime.toString() +
+                endTime.toString();
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -82,8 +114,4 @@ public class Team {
         return false;
     }
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }
